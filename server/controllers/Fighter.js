@@ -3,7 +3,7 @@ const models = require('../models');
 const Fighter = models.Fighter;
 
 const makerPage = (req, res) => {
- Fighter.FighterModel.findByAccount(req.session.account._id, (err, docs) => {
+  Fighter.FighterModel.findByAccount(req.session.account._id, (err, docs) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred ' });
@@ -42,11 +42,11 @@ const deleteFighter = (request, response) => {
 };
 
 const makeFighter = (req, res) => {
-  if (!req.body.name || 
-      !req.body.health || 
-      !req.body.damage || 
-      !req.body.speed || 
-      !req.body.armor || 
+  if (!req.body.name ||
+      !req.body.health ||
+      !req.body.damage ||
+      !req.body.speed ||
+      !req.body.armor ||
       !req.body.crit) {
     return res.status(400).json({ error: 'All fighter stats required' });
   }

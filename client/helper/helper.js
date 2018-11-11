@@ -23,3 +23,7 @@ const sendAjax = (type, action, data, success) => {
   });
 };
 
+// turns an object with properties into 'key=value&key2=value2' string
+const urlEncodeObject = (object) => {
+  return Object.keys(object).map(key => key + '=' + object[key]).join('&');
+};

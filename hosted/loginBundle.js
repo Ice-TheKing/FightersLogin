@@ -10,8 +10,6 @@ var handleLogin = function handleLogin(e) {
     return false;
   }
 
-  console.log($("input[name=_csrf]").val());
-
   sendAjax('POST', $("#loginForm").attr("action"), $("#loginForm").serialize(), redirect);
 
   return false;
@@ -59,7 +57,7 @@ var LoginWindow = function LoginWindow(props) {
     ),
     React.createElement("input", { id: "pass", type: "password", name: "pass", placeholder: "password" }),
     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-    React.createElement("input", { className: "formSubmit", type: "submit", value: "Sign in" })
+    React.createElement("input", { "class": "waves-effect waves-light btn", className: "formSubmit", type: "submit", value: "Sign in" })
   );
 };
 
@@ -91,7 +89,7 @@ var SignupWindow = function SignupWindow(props) {
     ),
     React.createElement("input", { id: "pass2", type: "password", name: "pass2", placeholder: "retype password" }),
     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-    React.createElement("input", { className: "formSubmit", type: "submit", value: "Sign in" })
+    React.createElement("input", { "class": "waves-effect waves-light btn", className: "formSubmit", type: "submit", value: "Sign up" })
   );
 };
 
@@ -156,4 +154,11 @@ var sendAjax = function sendAjax(type, action, data, success) {
       handleError(messageObj.error);
     }
   });
+};
+
+// turns an object with properties into 'key=value&key2=value2' string
+var urlEncodeObject = function urlEncodeObject(object) {
+  return Object.keys(object).map(function (key) {
+    return key + '=' + object[key];
+  }).join('&');
 };

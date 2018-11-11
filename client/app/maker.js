@@ -1,32 +1,36 @@
+/// sends request to create fighter
 const handleFighter = (e) => {
   e.preventDefault();
   
-  $("#fighterMessage").animate({width:'hide'},350);
+  // $("#fighterMessage").animate({width:'hide'},350);
+  const sliders = getSliders();
   
-  if($("#fighterName").val() == '' || 
-     $("#fighterHealth").val() == '' || 
-     $("#fighterDamage").val() == '' ||
-     $("#fighterSpeed").val() == '' ||
-     $("#fighterArmor").val() == '' ||
-     $("#fighterCrit").val() == ''
+  if(sliders.name == '' || 
+     sliders.health == '' || 
+     sliders.damage == '' ||
+     sliders.speed == '' ||
+     sliders.armor == '' ||
+     sliders.crit == ''
     ) {
     handleError("All stats are required");
     return false;
   }
-
-  console.log($("#fighterForm").serialize());
   
   sendAjax('POST', $("#fighterForm").attr("action"), $("#fighterForm").serialize(), function() {
-    loadFightersFromServer();
+    // loadFightersFromServer();
+    // TODO: Show a success window and reset forms
   });
   
   return false;
 };
 
+/// called by the delete html button
 const handleDeleteClick = (e) => {
   DeleteFighter(e);
 };
 
+
+// sends a delete request to the server
 const DeleteFighter = (e) => {
   let csrfToken = $("#_csrf").val();
   
@@ -41,6 +45,7 @@ const DeleteFighter = (e) => {
   });
 };
 
+/// Create a fighter React page
 const FighterForm = (props) => {
   return (
     <form id="fighterForm"
@@ -50,25 +55,65 @@ const FighterForm = (props) => {
           method="POST"
           className="fighterForm"
       >
-      <label htmlFor="name">Name: </label>
-      <input id="fighterName" type="text" name="name" placeholder="Fighter Name"/>
-      <label for="health">Health: </label>
-      <input id="fighterHealth" type="number" name="health" min="1" max="15" step="1" value="1"/>
-      <label for="damage">Damage: </label>
-      <input id="fighterDamage" type="number" name="damage" min="1" max="15" step="1" value="1"/>
-      <label for="speed">Speed: </label>
-      <input id="fighterSpeed" type="number" name="speed" min="1" max="15" step="1" value="1"/>
-      <label for="armor">Armor: </label>
-      <input id="fighterArmor" type="number" name="armor" min="1" max="15" step="1" value="1"/>
-      <label for="crit">Crit: </label>
-      <input id="fighterCrit" type="number" name="crit" min="1" max="15" step="1" value="1"/>
+      <br></br>
+      <div className="row">
+        <div className="input-field col s12">
+          <input id="fighterName" type="text" name="name" />
+          <label for="name">Fighter Name</label>
+        </div>
+        
+        <div className="input-field col s4">
+          <p className="range-field">
+            <label for="health">
+              <input id="fighterHealth" name="health" value="1" min="1" max="15"/>
+            Health</label>
+          </p>
+        </div>
+        
+        <div className="input-field col s4">
+          <p className="range-field">
+            <label for="damage">
+              <input type="range" id="fighterDamage" name="damage" min="1" max="15"/>
+            Damage</label>
+          </p>
+        </div>
+        
+        <div className="input-field col s4">
+          <p className="range-field">
+            <label for="speed">
+              <input type="range" id="fighterSpeed" name="speed" min="1" max="15"/>
+            Speed</label>
+          </p>
+        </div>
+        
+        <div className="input-field col s4">
+          <p className="range-field">
+            <label for="armor">
+              <input type="range" id="fighterArmor" name="armor" min="1" max="15"/>
+            Armor</label>
+          </p>
+        </div>
+        
+        <div className="input-field col s4">
+          <p className="range-field">
+            <label for="crit">
+              <input type="range" id="fighterCrit" name="crit" min="1" max="15"/>
+            Crit</label>
+          </p>
+        </div>
+        
+        <div className="input-field col s4">
+          <h6 id="pointsField">Points Left: 31</h6>
+        </div>
+      </div>
       
       <input type="hidden" id="_csrf" name="_csrf" value={props.csrf} />
-      <input className="makeFighterSubmit" type="submit" value="Create Fighter"/>
+      <input className="waves-effect waves-light btn" type="submit" value="Create Fighter"/>
     </form>
   );
 };
 
+/// React page for change password page
 const ChangePassForm = (props) => {
   return (
     <form id="changePassForm" name="changePassForm"
@@ -87,6 +132,7 @@ const ChangePassForm = (props) => {
   );
 };
 
+/// sends change password request to server
 const handleChangePass = (e) => {
   e.preventDefault();
   
@@ -109,6 +155,7 @@ const handleChangePass = (e) => {
   return false;
 };
 
+/// Renders all fighters
 const FighterList = function(props) {
   if(props.fighters.length === 0) {
     return (
@@ -137,6 +184,7 @@ const FighterList = function(props) {
   );
 };
 
+/// gets back all fighters owned by the current user from the server, then renders fighter list
 const loadFightersFromServer = () => {
   sendAjax('GET', '/getFighters', null, (data) => {
     ReactDOM.render(
@@ -146,18 +194,24 @@ const loadFightersFromServer = () => {
   });
 };
 
+/// renders the create fighter page
 const setupMakerPage = function(csrf) {
   ReactDOM.render(
     <FighterForm csrf={csrf} />, document.querySelector("#makeFighter")
   );
   
   ReactDOM.render(
-    <FighterList fighters={[]} />, document.querySelector("#fighters")
+    // <FighterList fighters={[]} />, document.querySelector("#fighters")
+    <h1></h1>, document.querySelector("#fighters")
   );
   
-  loadFightersFromServer();
+  // loadFightersFromServer();
+  
+  // setup sliders
+  setupMaterializeElements();
 };
 
+/// renders the change password page
 const setupChangePassPage = function(csrf) {
   ReactDOM.render(
     <h1></h1>, document.querySelector("#makeFighter")
@@ -168,6 +222,7 @@ const setupChangePassPage = function(csrf) {
   );
 };
 
+/// sets up click events for the navigation buttons to re-render the page with react
 const setupNavButtons = function(csrf) {
   const makerButton = document.querySelector("#makerButton");
   const changePassButton = document.querySelector("#changePassButton");
@@ -185,6 +240,7 @@ const setupNavButtons = function(csrf) {
   });
 };
 
+/// request a csrfToken
 const getToken = () => {
   sendAjax('GET', '/getToken', null, (result) => {
     setupNavButtons(result.csrfToken);
@@ -192,6 +248,72 @@ const getToken = () => {
   });
 };
 
+/// as soon as the document loads
 $(document).ready(function() {
   getToken();
 });
+
+/// setup the sliders with materialize and kendoui
+const setupMaterializeElements = () => {
+  let health = $("#fighterHealth").kendoSlider({
+    change: updatePoints,
+    showButtons: false,
+    min: 1,
+    max: 15,
+    smallStep: 1,
+    largeStep: 0,
+  }).data("kendoSlider");
+  let damage = $("#fighterDamage").kendoSlider({
+    change: updatePoints,
+    showButtons: false,
+    min: 1,
+    max: 15,
+    smallStep: 1,
+    largeStep: 0,
+  }).data("kendoSlider");
+  let speed = $("#fighterSpeed").kendoSlider({
+    change: updatePoints,
+    showButtons: false,
+    min: 1,
+    max: 15,
+    smallStep: 1,
+    largeStep: 0,
+  }).data("kendoSlider");
+  let armor = $("#fighterArmor").kendoSlider({
+    change: updatePoints,
+    showButtons: false,
+    min: 1,
+    max: 15,
+    smallStep: 1,
+    largeStep: 0,
+  }).data("kendoSlider");
+  let crit = $("#fighterCrit").kendoSlider({
+    change: updatePoints,
+    showButtons: false,
+    min: 1,
+    max: 15,
+    smallStep: 1,
+    largeStep: 0,
+  }).data("kendoSlider");
+};
+
+const updatePoints = () => {
+  const sliders = getSliders();
+  let newPoints = 36 - sliders.health - sliders.damage - sliders.speed - sliders.armor - sliders.crit;
+  pointsField.textContent = `Points Left: ${newPoints}`;
+};
+
+/// helper function to easily retrieve values from the stat sliders in the creator app
+const getSliders = () => {
+  const sliders = {};
+  sliders.name = $("#fighterName").val();
+  sliders.health = $("#fighterHealth").val();
+  sliders.damage = $("#fighterDamage").val();
+  sliders.speed = $("#fighterSpeed").val();
+  sliders.armor = $("#fighterArmor").val();
+  sliders.crit = $("#fighterCrit").val();
+  return sliders;
+};
+
+
+

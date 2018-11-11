@@ -22,25 +22,27 @@ const FighterSchema = new mongoose.Schema({
     min: 0,
     required: true,
   },
-  
+
+  // TODO: make max health, so characters have to heal over time
+
   damage: {
     type: Number,
     min: 0,
     required: true,
   },
-  
+
   speed: {
     type: Number,
     min: 0,
     required: true,
   },
-  
+
   armor: {
     type: Number,
     min: 0,
     required: true,
   },
-  
+
   crit: {
     type: Number,
     min: 0,
@@ -75,7 +77,13 @@ FighterSchema.statics.findByAccount = (accountId, callback) => {
     account: convertId(accountId),
   };
 
-  return FighterModel.find(search).select('name age city').exec(callback);
+  return FighterModel.find(search).select('name health damage speed armor crit').exec(callback);
+};
+
+FighterSchema.statics.findAll = (callback) => {
+  const search = { };
+
+  return FighterModel.find(search).select('name health damage speed armor crit').limit(100).exec(callback);
 };
 
 FighterSchema.statics.deleteByName = (accountId, name, callback) => {
