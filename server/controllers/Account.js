@@ -117,7 +117,7 @@ const changePass = (request, response) => {
       return res.status(401).json({ error: 'Incorrect password' });
     }
     
-    return Account.AccountModel.generateHash(req.body.pass, (salt, hash) =>
+    return Account.AccountModel.generateHash(req.body.newPass, (salt, hash) =>
     // get the object in the database
      Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
        const account = doc;
@@ -131,15 +131,17 @@ const changePass = (request, response) => {
          console.dir(err);
          return res.status(400).json({ error: 'Account not found. Please try again' });
        }
-       // update password
+       console.dir(`old password = ${doc.password}`);
+      // update password
        account.password = hash;
        account.salt = salt;
+       console.dir(`new password = ${doc.password}`);
 
        const savePromise = doc.save();
 
        savePromise.then(() => {
          req.session.account = Account.AccountModel.toAPI(doc);
-         return res.json({ message: 'Password Changed Successfully' });
+         return res.json({ redirect:'/maker', message: 'Password Changed Successfully' });
        });
 
        savePromise.catch(error => {
@@ -147,10 +149,8 @@ const changePass = (request, response) => {
          return res.status(400).json({ error: 'An error occurred' });
        });
 
-       return res.json({ });
+       // return res.json({ redirect:'/maker' });
      }));
-
-    return res.json({ message: 'Password Changed Successfully' });
   });
 };
 

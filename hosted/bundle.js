@@ -634,6 +634,9 @@ var sendToast = function sendToast(message) {
 
 var redirect = function redirect(response) {
   window.location = response.redirect;
+  if (response.message) {
+    sendToast(response.message);
+  }
 };
 
 var sendAjax = function sendAjax(type, action, data, success) {
@@ -646,7 +649,7 @@ var sendAjax = function sendAjax(type, action, data, success) {
     success: success,
     error: function error(xhr, status, _error) {
       var messageObj = JSON.parse(xhr.responseText);
-      sendToast(messageObj.error || messageObj.err || messageObj.er);
+      sendToast(messageObj.error);
     }
   });
 };

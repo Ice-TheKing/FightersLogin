@@ -9,6 +9,9 @@ const sendToast = (message) => {
 
 const redirect = (response) => {
   window.location = response.redirect;
+  if(response.message) {
+    sendToast(response.message);
+  }
 };
 
 const sendAjax = (type, action, data, success) => {
@@ -21,7 +24,7 @@ const sendAjax = (type, action, data, success) => {
     success: success,
     error: function(xhr, status, error) {
       var messageObj = JSON.parse(xhr.responseText);
-      sendToast(messageObj.error || messageObj.err || messageObj.er);
+      sendToast(messageObj.error);
     }
   });
 };
