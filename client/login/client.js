@@ -4,7 +4,7 @@ const handleLogin = (e) => {
   $("#fighterMessage").animate({width:'hide'},350);
   
   if($("#user").val() == '' || $("pass").val() == '') {
-    handleError("RAWR! Username or password is empty");
+    handleError("Username or password is empty");
     return false;
   }
   
@@ -19,12 +19,12 @@ const handleSignup = (e) => {
   $("#fighterMessage").animate({width:'hide'},350);
   
   if($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
-    handleError("RAWR! All fields are required");
+    handleError("All fields are required");
     return false;
   }
   
   if($("#pass").val() !== $("#pass2").val()) {
-    handleError("RAWR! All fields are required");
+    handleError("All fields are required");
     return false;
   }
   
@@ -46,7 +46,7 @@ const LoginWindow = (props) => {
       <label htmlFor="pass">Password: </label>
       <input id="pass" type="password" name="pass" placeholder="password" />
       <input type="hidden" name="_csrf" value={props.csrf} />
-      <input class="waves-effect waves-light btn" className="formSubmit" type="submit" value="Sign in" />
+      <input className="formSubmit waves-effect waves-light btn" type="submit" value="Sign in" />
     </form>
   );
 };
@@ -66,7 +66,7 @@ const SignupWindow = (props) => {
       <label htmlFor="pass2">Password: </label>
       <input id="pass2" type="password" name="pass2" placeholder="retype password" />
       <input type="hidden" name="_csrf" value={props.csrf} />
-      <input class="waves-effect waves-light btn" className="formSubmit" type="submit" value="Sign up" />
+      <input className="formSubmit waves-effect waves-light btn" type="submit" value="Sign up" />
     </form>
   );
 };

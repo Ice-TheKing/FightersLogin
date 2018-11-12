@@ -76,14 +76,14 @@ FighterSchema.statics.findByAccount = (accountId, callback) => {
   const search = {
     account: convertId(accountId),
   };
+  console.dir(`non converted: ${accountId} converted:${convertId(accountId)}`);
 
-  return FighterModel.find(search).select('name health damage speed armor crit').exec(callback);
+  return FighterModel.find(search).select('account name health damage speed armor crit').exec(callback);
 };
 
 FighterSchema.statics.findAll = (callback) => {
   const search = { };
-
-  return FighterModel.find(search).select('name health damage speed armor crit').limit(100).exec(callback);
+  return FighterModel.find(search).select('account name health damage speed armor crit').limit(100).exec(callback);
 };
 
 FighterSchema.statics.deleteByName = (accountId, name, callback) => {

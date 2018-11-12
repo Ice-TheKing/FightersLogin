@@ -22,7 +22,21 @@ const getFighters = (request, response) => {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred' });
     }
+    
+    return res.json({ fighters: docs });
+  });
+};
 
+const getAllFighters = (request, response) => {
+  const req = request;
+  const res = response;
+  
+  return Fighter.FighterModel.findAll((err, docs) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred' });
+    }
+    
     return res.json({ fighters: docs });
   });
 };
@@ -42,22 +56,29 @@ const deleteFighter = (request, response) => {
 };
 
 const makeFighter = (req, res) => {
-  if (!req.body.name ||
-      !req.body.health ||
-      !req.body.damage ||
-      !req.body.speed ||
-      !req.body.armor ||
-      !req.body.crit) {
+  // cast everything as a number (except name of course)
+  const name = req.body.name;
+  const health = Number(req.body.health);
+  const damage = Number(req.body.damage);
+  const speed = Number(req.body.speed);
+  const armor = Number(req.body.armor);
+  const crit = Number(req.body.crit);
+  
+  if (!name||!health||!damage||!speed||!armor||!crit) {
     return res.status(400).json({ error: 'All fighter stats required' });
+  }
+  
+  if(health+damage+speed+armor+crit>36) {
+    return res.status(400).json({ error: 'stats must not exceed 36' });
   }
 
   const fighterData = {
-    name: req.body.name,
-    health: req.body.health,
-    damage: req.body.damage,
-    speed: req.body.speed,
-    armor: req.body.armor,
-    crit: req.body.crit,
+    name,
+    health,
+    damage,
+    speed,
+    armor,
+    crit,
     account: req.session.account._id,
   };
 
@@ -81,5 +102,6 @@ const makeFighter = (req, res) => {
 
 module.exports.makerPage = makerPage;
 module.exports.getFighters = getFighters;
+module.exports.getAllFighters = getAllFighters;
 module.exports.make = makeFighter;
 module.exports.deleteFighter = deleteFighter;

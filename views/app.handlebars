@@ -31,26 +31,28 @@
     <div class="nav-wrapper">
       <a href="/login"><img id="logo" class="responsive-img" src="/assets/img/samurai.png" alt="face logo"/></a>
       <ul id="nav-mobile" class="left hide-on-med-and-down">
-        <li><a href="/logout">Log Out</a></li>
+        <!-- Left Side Navbar -->
+        <li><a id="fightersButton" href="/allFighters">Fighters</a></li>
+        <li><a id="yourFightersButton" href="/yourFighters">Your Fighters</a></li>
         <li><a id="makerButton" href="/maker">Create a Fighter</a></li>
-        <li><a id="changePassButton" href="/changePass">Change Password</a></li>
       </ul>
-      <!--<div class="navlink"><a href="/logout">Log out</a></div>
-      <div class="navlink" id="makerButton"><a href="/maker">Fighter Maker</a></div>
-      <div class="navlink" id="changePassButton"><a href="/changePass">Change Password</a></div>-->
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <!-- Right Side Navbar -->
+        <li><a id="changePassButton" href="/changePass">Change Password</a></li>
+        <li><a href="/logout">Log Out</a></li>
+      </ul>
     </div>
   </nav>
   
   <div class="container">
-    <section id="makeFighter">
-    </section>
-    <section id="fighters">
-    </section>
-    <section id="content"></section>
+    <!--<div id="makeFighter"></div>
+    <div id="fighters"></div>-->
+    <div id="content"></div>
   </div>
+  <!--
   <div id="fighterMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
     <h3><span id="errorMessage"></span></h3><img id="fighter" src="assets/img/domo.png" alt="fighter"/>
-  </div>
+  </div>-->
   <script src="/assets/bundle.js"></script>
   
   <!--Materialize JavaScript at end of body for optimized loading-->

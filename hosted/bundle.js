@@ -4,17 +4,24 @@
 var handleFighter = function handleFighter(e) {
   e.preventDefault();
 
-  // $("#fighterMessage").animate({width:'hide'},350);
   var sliders = getSliders();
 
-  if (sliders.name == '' || sliders.health == '' || sliders.damage == '' || sliders.speed == '' || sliders.armor == '' || sliders.crit == '') {
-    handleError("All stats are required");
+  // thought it was confusing enough to warrant its own error message ("wait but I set everything!")
+  if (sliders.name == '') {
+    sendToast('Fighter Name is required');
+    return false;
+  }
+
+  if (sliders.health == '' || sliders.damage == '' || sliders.speed == '' || sliders.armor == '' || sliders.crit == '') {
+    sendToast('All stats are required');
     return false;
   }
 
   sendAjax('POST', $("#fighterForm").attr("action"), $("#fighterForm").serialize(), function () {
     // loadFightersFromServer();
     // TODO: Show a success window and reset forms
+    sendToast('Fighter created successfully');
+    resetForm();
   });
 
   return false;
@@ -51,7 +58,6 @@ var FighterForm = function FighterForm(props) {
       method: 'POST',
       className: 'fighterForm'
     },
-    React.createElement('br', null),
     React.createElement(
       'div',
       { className: 'row' },
@@ -146,7 +152,21 @@ var FighterForm = function FighterForm(props) {
       )
     ),
     React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf }),
-    React.createElement('input', { className: 'waves-effect waves-light btn', type: 'submit', value: 'Create Fighter' })
+    React.createElement('input', { className: 'waves-effect waves-purple btn', type: 'submit', value: 'Create Fighter' })
+  );
+};
+
+/// Page to render while the AJAX call comes back
+var LoadingPage = function LoadingPage(props) {
+  return React.createElement(
+    'form',
+    { id: 'loadingForm', name: 'loadingForm' },
+    React.createElement(
+      'div',
+      { className: 'progress' },
+      React.createElement('div', { className: 'indeterminate' })
+    ),
+    React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf })
   );
 };
 
@@ -173,7 +193,7 @@ var ChangePassForm = function ChangePassForm(props) {
     ),
     React.createElement('input', { id: 'pass2', type: 'password', name: 'pass2', placeholder: 'retype password' }),
     React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
-    React.createElement('input', { className: 'formSubmit', type: 'submit', value: 'Submit' })
+    React.createElement('input', { className: 'formSubmit waves-effect waves-purple btn', type: 'submit', value: 'Submit' })
   );
 };
 
@@ -181,15 +201,13 @@ var ChangePassForm = function ChangePassForm(props) {
 var handleChangePass = function handleChangePass(e) {
   e.preventDefault();
 
-  $("#fighterMessage").animate({ width: 'hide' }, 350);
-
   if ($("#pass").val() == '' || $("#pass2").val() == '') {
-    handleError("RAWR! All fields are required");
+    handleError("All fields are required");
     return false;
   }
 
   if ($("#pass").val() !== $("#pass2").val()) {
-    handleError("RAWR! All fields are required");
+    handleError("All fields are required");
     return false;
   }
 
@@ -200,8 +218,8 @@ var handleChangePass = function handleChangePass(e) {
   return false;
 };
 
-/// Renders all fighters
-var FighterList = function FighterList(props) {
+/// Renders all fighters owned by player
+var YourFighterList = function YourFighterList(props) {
   if (props.fighters.length === 0) {
     return React.createElement(
       'div',
@@ -210,7 +228,105 @@ var FighterList = function FighterList(props) {
         'h3',
         { className: 'emptyFighter' },
         'No Fighters yet'
+      ),
+      React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf })
+    );
+  }
+
+  // const fighterNodes = props.fighters.map(function(fighter) {
+  //   return (
+  //     <div key={fighter._id} className="fighter">
+  //       <h3 className="fighterName"> Name: {fighter.name} </h3>
+  //       <h3 className="fighterHealth"> Health: {fighter.health} </h3>
+  //       <h3 className="fighterDamage"> Damage: {fighter.damage} </h3>
+  //       <input type="submit" className="waves-effect waves-purple btn" value="Delete Fighter" name={fighter.name} onClick={handleDeleteClick} />
+  //     </div>
+  //   );
+  // });
+
+  var fighterNodes = props.fighters.map(function (fighter) {
+    return React.createElement(
+      'div',
+      { key: fighter._id, className: 'fighter' },
+      React.createElement(
+        'div',
+        { className: 'col s12 m12' },
+        React.createElement(
+          'div',
+          { className: 'card blue-grey darken-1' },
+          React.createElement(
+            'div',
+            { className: 'card-content white-text' },
+            React.createElement(
+              'span',
+              { className: 'card-title' },
+              fighter.name
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Health: ',
+              fighter.health
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Damage: ',
+              fighter.damage
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Speed: ',
+              fighter.speed
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Armor: ',
+              fighter.armor
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Crit Chance: ',
+              fighter.crit * 2,
+              '%'
+            )
+          ),
+          React.createElement(
+            'div',
+            { className: 'card-action' },
+            React.createElement(
+              'a',
+              { name: fighter.name, onClick: handleDeleteClick },
+              'Delete Fighter'
+            )
+          )
+        )
       )
+    );
+  });
+
+  return React.createElement(
+    'div',
+    { className: 'fighterList row' },
+    fighterNodes,
+    React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf })
+  );
+};
+
+var AllFighterList = function AllFighterList(props) {
+  if (props.fighters.length === 0) {
+    return React.createElement(
+      'div',
+      { className: 'fighterList' },
+      React.createElement(
+        'h3',
+        { className: 'emptyFighter' },
+        'No Fighters yet'
+      ),
+      React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf })
     );
   }
 
@@ -218,71 +334,136 @@ var FighterList = function FighterList(props) {
     return React.createElement(
       'div',
       { key: fighter._id, className: 'fighter' },
-      React.createElement('img', { src: '/assets/img/domoface.jpeg', alt: 'fighter face', className: 'fighterFace' }),
       React.createElement(
-        'h3',
-        { className: 'fighterName' },
-        ' Name: ',
-        fighter.name,
-        ' '
-      ),
-      React.createElement(
-        'h3',
-        { className: 'fighterAge' },
-        ' Age: ',
-        fighter.age,
-        ' '
-      ),
-      React.createElement(
-        'h3',
-        { className: 'fighterCity' },
-        ' City: ',
-        fighter.city,
-        ' '
-      ),
-      React.createElement('input', { type: 'submit', value: 'Delete Fighter', name: fighter.name, onClick: handleDeleteClick })
+        'div',
+        { className: 'col s3 m3' },
+        React.createElement(
+          'div',
+          { className: 'card blue-grey darken-1' },
+          React.createElement(
+            'div',
+            { className: 'card-content white-text' },
+            React.createElement(
+              'span',
+              { className: 'card-title' },
+              fighter.name
+            ),
+            React.createElement(
+              'p',
+              { id: 'accountField' },
+              'Created By ',
+              fighter.account
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Health: ',
+              fighter.health
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Damage: ',
+              fighter.damage
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Speed: ',
+              fighter.speed
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Armor: ',
+              fighter.armor
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Crit Chance: ',
+              fighter.crit * 2,
+              '%'
+            )
+          ),
+          React.createElement('div', { className: 'card-action' })
+        )
+      )
     );
   });
 
   return React.createElement(
     'div',
-    { className: 'fighterList' },
-    fighterNodes
+    { className: 'fighterList row' },
+    fighterNodes,
+    React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf })
   );
 };
 
 /// gets back all fighters owned by the current user from the server, then renders fighter list
 var loadFightersFromServer = function loadFightersFromServer() {
+  var csrf = $("#_csrf").val();
   sendAjax('GET', '/getFighters', null, function (data) {
-    ReactDOM.render(React.createElement(FighterList, { fighters: data.fighters }), document.querySelector("#fighters"));
+    ReactDOM.render(React.createElement(YourFighterList, { fighters: data.fighters, csrf: csrf }), document.querySelector("#content"));
+  });
+};
+
+var loadAllFightersFromServer = function loadAllFightersFromServer() {
+  var csrf = $("#_csrf").val();
+  sendAjax('GET', '/getAllFighters', null, function (data) {
+    ReactDOM.render(React.createElement(AllFighterList, { fighters: data.fighters, csrf: csrf }), document.querySelector("#content"));
   });
 };
 
 /// renders the create fighter page
 var setupMakerPage = function setupMakerPage(csrf) {
-  ReactDOM.render(React.createElement(FighterForm, { csrf: csrf }), document.querySelector("#makeFighter"));
-
-  ReactDOM.render(
-  // <FighterList fighters={[]} />, document.querySelector("#fighters")
-  React.createElement('h1', null), document.querySelector("#fighters"));
-
-  // loadFightersFromServer();
+  ReactDOM.render(React.createElement(FighterForm, { csrf: csrf }), document.querySelector("#content"));
 
   // setup sliders
   setupMaterializeElements();
+
+  updateUrl('/maker');
 };
 
 /// renders the change password page
 var setupChangePassPage = function setupChangePassPage(csrf) {
-  ReactDOM.render(React.createElement('h1', null), document.querySelector("#makeFighter"));
+  ReactDOM.render(React.createElement(ChangePassForm, { csrf: csrf }), document.querySelector("#content"));
 
-  ReactDOM.render(React.createElement(ChangePassForm, { csrf: csrf }), document.querySelector("#fighters"));
+  updateUrl('/changePass');
+};
+
+var setupYourFightersPage = function setupYourFightersPage(csrf) {
+  // ReactDOM.render(
+  //   <YourFighterList fighters={[]} csrf={csrf} />, document.querySelector("#content")
+  // );
+  // Show a loading screen while the AJAX call goes through
+
+  ReactDOM.render(React.createElement(LoadingPage, { csrf: csrf }), document.querySelector("#content"));
+
+  loadFightersFromServer();
+
+  updateUrl('/yourFighters');
+};
+
+var setupFightersPage = function setupFightersPage(csrf) {
+  // ReactDOM.render(
+  //   <AllFighterList fighters={[]} csrf={csrf} />, document.querySelector("#content")
+  // );
+  // Show a loading screen while the AJAX call goes through
+
+  ReactDOM.render(React.createElement(LoadingPage, { csrf: csrf }), document.querySelector("#content"));
+
+  loadAllFightersFromServer();
+
+  updateUrl('/fighters');
 };
 
 /// sets up click events for the navigation buttons to re-render the page with react
 var setupNavButtons = function setupNavButtons(csrf) {
   var makerButton = document.querySelector("#makerButton");
   var changePassButton = document.querySelector("#changePassButton");
+  var yourFightersButton = document.querySelector("#yourFightersButton");
+  var fightersButton = document.querySelector("#fightersButton");
 
   makerButton.addEventListener("click", function (e) {
     e.preventDefault();
@@ -295,13 +476,25 @@ var setupNavButtons = function setupNavButtons(csrf) {
     setupChangePassPage(csrf);
     return false;
   });
+
+  yourFightersButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    setupYourFightersPage(csrf);
+    return false;
+  });
+
+  fightersButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    setupFightersPage(csrf);
+    return false;
+  });
 };
 
 /// request a csrfToken
 var getToken = function getToken() {
   sendAjax('GET', '/getToken', null, function (result) {
     setupNavButtons(result.csrfToken);
-    setupMakerPage(result.csrfToken);
+    setupFightersPage(result.csrfToken);
   });
 };
 
@@ -310,10 +503,30 @@ $(document).ready(function () {
   getToken();
 });
 
+/* Sliders for Create Page */
+// (yes its that difficult lol)
+
 /// setup the sliders with materialize and kendoui
 var setupMaterializeElements = function setupMaterializeElements() {
+  var slideHealth = function slideHealth(e) {
+    return slidePoints(e, 'health');
+  };
+  var slideDamage = function slideDamage(e) {
+    return slidePoints(e, 'damage');
+  };
+  var slideSpeed = function slideSpeed(e) {
+    return slidePoints(e, 'speed');
+  };
+  var slideArmor = function slideArmor(e) {
+    return slidePoints(e, 'armor');
+  };
+  var slideCrit = function slideCrit(e) {
+    return slidePoints(e, 'crit');
+  };
+
   var health = $("#fighterHealth").kendoSlider({
     change: updatePoints,
+    slide: slideHealth,
     showButtons: false,
     min: 1,
     max: 15,
@@ -322,6 +535,7 @@ var setupMaterializeElements = function setupMaterializeElements() {
   }).data("kendoSlider");
   var damage = $("#fighterDamage").kendoSlider({
     change: updatePoints,
+    slide: slideDamage,
     showButtons: false,
     min: 1,
     max: 15,
@@ -330,6 +544,7 @@ var setupMaterializeElements = function setupMaterializeElements() {
   }).data("kendoSlider");
   var speed = $("#fighterSpeed").kendoSlider({
     change: updatePoints,
+    slide: slideSpeed,
     showButtons: false,
     min: 1,
     max: 15,
@@ -338,6 +553,7 @@ var setupMaterializeElements = function setupMaterializeElements() {
   }).data("kendoSlider");
   var armor = $("#fighterArmor").kendoSlider({
     change: updatePoints,
+    slide: slideArmor,
     showButtons: false,
     min: 1,
     max: 15,
@@ -346,6 +562,7 @@ var setupMaterializeElements = function setupMaterializeElements() {
   }).data("kendoSlider");
   var crit = $("#fighterCrit").kendoSlider({
     change: updatePoints,
+    slide: slideCrit,
     showButtons: false,
     min: 1,
     max: 15,
@@ -354,9 +571,37 @@ var setupMaterializeElements = function setupMaterializeElements() {
   }).data("kendoSlider");
 };
 
-var updatePoints = function updatePoints() {
+var updatePoints = function updatePoints(e) {
   var sliders = getSliders();
   var newPoints = 36 - sliders.health - sliders.damage - sliders.speed - sliders.armor - sliders.crit;
+  pointsField.textContent = 'Points Left: ' + newPoints;
+};
+
+/// since when we slide, e.value just gives the int value of the current slider and we don't know which is active, 
+/// we have to make a switch statement for everything that it could be, substituting e.value for that stat so we don't add it twice
+var slidePoints = function slidePoints(e, text) {
+  var sliders = getSliders();
+  var newPoints = 36;
+  switch (text) {
+    case 'health':
+      newPoints = 36 - e.value - sliders.damage - sliders.speed - sliders.armor - sliders.crit;
+      break;
+    case 'damage':
+      newPoints = 36 - sliders.health - e.value - sliders.speed - sliders.armor - sliders.crit;
+      break;
+    case 'speed':
+      newPoints = 36 - sliders.health - sliders.damage - e.value - sliders.armor - sliders.crit;
+      break;
+    case 'armor':
+      newPoints = 36 - sliders.health - sliders.damage - sliders.speed - e.value - sliders.crit;
+      break;
+    case 'crit':
+      newPoints = 36 - sliders.health - sliders.damage - sliders.speed - sliders.armor - e.value;
+      break;
+    default:
+      newPoints = 36 - sliders.health - sliders.damage - sliders.speed - sliders.armor - sliders.crit;
+      break;
+  }
   pointsField.textContent = 'Points Left: ' + newPoints;
 };
 
@@ -371,15 +616,20 @@ var getSliders = function getSliders() {
   sliders.crit = $("#fighterCrit").val();
   return sliders;
 };
-"use strict";
+
+var resetForm = function resetForm() {};
+'use strict';
 
 var handleError = function handleError(message) {
-  $("#errorMessage").text(message);
-  $("#fighterMessage").animate({ width: 'toggle' }, 350);
+  M.toast({ html: '' + message });
+};
+
+/// same thing as handle error. Just replacing it
+var sendToast = function sendToast(message) {
+  M.toast({ html: '' + message });
 };
 
 var redirect = function redirect(response) {
-  $("#fighterMessage").animate({ width: 'hide' }, 350);
   window.location = response.redirect;
 };
 
@@ -404,3 +654,5 @@ var urlEncodeObject = function urlEncodeObject(object) {
     return key + '=' + object[key];
   }).join('&');
 };
+
+var updateUrl = function updateUrl(url) {};

@@ -6,7 +6,7 @@ var handleLogin = function handleLogin(e) {
   $("#fighterMessage").animate({ width: 'hide' }, 350);
 
   if ($("#user").val() == '' || $("pass").val() == '') {
-    handleError("RAWR! Username or password is empty");
+    handleError("Username or password is empty");
     return false;
   }
 
@@ -21,12 +21,12 @@ var handleSignup = function handleSignup(e) {
   $("#fighterMessage").animate({ width: 'hide' }, 350);
 
   if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
-    handleError("RAWR! All fields are required");
+    handleError("All fields are required");
     return false;
   }
 
   if ($("#pass").val() !== $("#pass2").val()) {
-    handleError("RAWR! All fields are required");
+    handleError("All fields are required");
     return false;
   }
 
@@ -57,7 +57,7 @@ var LoginWindow = function LoginWindow(props) {
     ),
     React.createElement("input", { id: "pass", type: "password", name: "pass", placeholder: "password" }),
     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-    React.createElement("input", { "class": "waves-effect waves-light btn", className: "formSubmit", type: "submit", value: "Sign in" })
+    React.createElement("input", { className: "formSubmit waves-effect waves-light btn", type: "submit", value: "Sign in" })
   );
 };
 
@@ -89,7 +89,7 @@ var SignupWindow = function SignupWindow(props) {
     ),
     React.createElement("input", { id: "pass2", type: "password", name: "pass2", placeholder: "retype password" }),
     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-    React.createElement("input", { "class": "waves-effect waves-light btn", className: "formSubmit", type: "submit", value: "Sign up" })
+    React.createElement("input", { className: "formSubmit waves-effect waves-light btn", type: "submit", value: "Sign up" })
   );
 };
 
@@ -129,15 +129,18 @@ var getToken = function getToken() {
 $(document).ready(function () {
   getToken();
 });
-"use strict";
+'use strict';
 
 var handleError = function handleError(message) {
-  $("#errorMessage").text(message);
-  $("#fighterMessage").animate({ width: 'toggle' }, 350);
+  M.toast({ html: '' + message });
+};
+
+/// same thing as handle error. Just replacing it
+var sendToast = function sendToast(message) {
+  M.toast({ html: '' + message });
 };
 
 var redirect = function redirect(response) {
-  $("#fighterMessage").animate({ width: 'hide' }, 350);
   window.location = response.redirect;
 };
 
@@ -162,3 +165,5 @@ var urlEncodeObject = function urlEncodeObject(object) {
     return key + '=' + object[key];
   }).join('&');
 };
+
+var updateUrl = function updateUrl(url) {};

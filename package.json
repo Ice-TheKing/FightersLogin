@@ -1,11 +1,11 @@
 {
-  "name": "Logins",
+  "name": "FighterLogin",
   "version": "1.0.0",
   "engines": {
     "node": "7.5.0",
     "npm": "4.0.5"
   },
-  "description": "A Simple Login Example using Node.js, Mongo and Redis",
+  "description": "A Simple Login System for a fighter app using Node.js, Mongo and Redis",
   "main": "./server/app.js",
   "scripts": {
     "buildLoginBundle": "babel ./client/login ./client/helper --presets react --out-file ./hosted/loginBundle.js",
@@ -24,7 +24,7 @@
     "Redis",
     "Login"
   ],
-  "author": "Cody Van De Mark",
+  "author": "Mychael B Hunt",
   "license": "Apache 2.0",
   "dependencies": {
     "body-parser": "^1.15.0",

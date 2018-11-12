@@ -1,10 +1,13 @@
 const handleError = (message) => {
-  $("#errorMessage").text(message);
-  $("#fighterMessage").animate({width:'toggle'},350);
+  M.toast({html: `${message}`});
 };
 
+/// same thing as handle error. Just replacing it
+const sendToast = (message) => {
+  M.toast({html: `${message}`});
+}
+
 const redirect = (response) => {
-  $("#fighterMessage").animate({width:'hide'},350);
   window.location = response.redirect;
 };
 
@@ -26,4 +29,8 @@ const sendAjax = (type, action, data, success) => {
 // turns an object with properties into 'key=value&key2=value2' string
 const urlEncodeObject = (object) => {
   return Object.keys(object).map(key => key + '=' + object[key]).join('&');
+};
+
+const updateUrl = (url) => {
+  
 };
