@@ -10,7 +10,7 @@ const handleFighter = (e) => {
     return false;
   }
   
-  if(sliders.health == '' || 
+  if(sliders.health == '' ||
      sliders.damage == '' ||
      sliders.speed == '' ||
      sliders.armor == '' ||
@@ -125,7 +125,7 @@ const LoadingPage = function(props) {
       <div className="progress">
         <div className="indeterminate"></div>
       </div>
-      <input type="hidden" name="_csrf" value={props.csrf} />
+      <input type="hidden" id="_csrf" name="_csrf" value={props.csrf} />
     </form>
   );
 };
@@ -137,12 +137,13 @@ const ChangePassForm = (props) => {
           onSubmit={handleChangePass}
           action="/changePass"
           method="POST"
-          className="mainForm"
       >
-      <label htmlFor="newPass">Password: </label>
+      <label htmlFor="newPass">Current Password: </label>
       <input id="pass" type="password" name="pass" placeholder="password" />
-      <label htmlFor="pass2">Password: </label>
-      <input id="pass2" type="password" name="pass2" placeholder="retype password" />
+      <label htmlFor="newPass">New Password: </label>
+      <input id="newPass" type="password" name="newPass" placeholder="new password" />
+      <label htmlFor="pass2">Retype Password: </label>
+      <input id="newPass2" type="password" name="newPass2" placeholder="retype password" />
       <input type="hidden" name="_csrf" value={props.csrf} />
       <input className="formSubmit waves-effect waves-purple btn" type="submit" value="Submit" />
     </form>      
@@ -153,17 +154,15 @@ const ChangePassForm = (props) => {
 const handleChangePass = (e) => {
   e.preventDefault();
   
-  if($("#pass").val() == '' || $("#pass2").val() == '') {
+  if($("#pass").val() == '' || $("#newPass").val() == '' || $("#newPass2").val() == '') {
     handleError("All fields are required");
     return false;
   }
   
-  if($("#pass").val() !== $("#pass2").val()) {
-    handleError("All fields are required");
+  if($("#newPass").val() !== $("#newPass2").val()) {
+    handleError("Passwords must match");
     return false;
   }
-  
-  console.dir($("#changePassForm").serialize());
   
   sendAjax('POST', $("#changePassForm").attr("action"), $("#changePassForm").serialize(), redirect);
   
@@ -171,7 +170,7 @@ const handleChangePass = (e) => {
 };
 
 /// Renders all fighters owned by player
-const YourFighterList = function(props) {  
+const YourFighterList = function(props) {
   if(props.fighters.length === 0) {
     return (
       <div className="fighterList">
@@ -196,7 +195,7 @@ const YourFighterList = function(props) {
     return (
       <div key={fighter._id} className="fighter">
         <div className="col s12 m12">
-          <div className="card blue-grey darken-1">
+          <div className="card dark-purple lighten-1">
             <div className="card-content white-text">
               <span className="card-title">{fighter.name}</span>
               <p>Health: {fighter.health}</p>
@@ -236,7 +235,7 @@ const AllFighterList = function(props) {
     return (
       <div key={fighter._id} className="fighter">
         <div className="col s3 m3">
-          <div className="card blue-grey darken-1">
+          <div className="card dark-purple lighten-1">
             <div className="card-content white-text">
               <span className="card-title">{fighter.name}</span>
               <p id="accountField">Created By {fighter.account}</p>

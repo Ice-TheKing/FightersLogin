@@ -154,7 +154,7 @@ var sendAjax = function sendAjax(type, action, data, success) {
     success: success,
     error: function error(xhr, status, _error) {
       var messageObj = JSON.parse(xhr.responseText);
-      sendToast(messageObj.error || messageObj.err || messageObj.er);
+      handleError(messageObj.error);
     }
   });
 };

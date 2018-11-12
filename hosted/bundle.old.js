@@ -166,7 +166,7 @@ var LoadingPage = function LoadingPage(props) {
       { className: 'progress' },
       React.createElement('div', { className: 'indeterminate' })
     ),
-    React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf })
+    React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf })
   );
 };
 
@@ -177,26 +177,21 @@ var ChangePassForm = function ChangePassForm(props) {
     { id: 'changePassForm', name: 'changePassForm',
       onSubmit: handleChangePass,
       action: '/changePass',
-      method: 'POST'
+      method: 'POST',
+      className: 'mainForm'
     },
     React.createElement(
       'label',
       { htmlFor: 'newPass' },
-      'Current Password: '
+      'Password: '
     ),
     React.createElement('input', { id: 'pass', type: 'password', name: 'pass', placeholder: 'password' }),
     React.createElement(
       'label',
-      { htmlFor: 'newPass' },
-      'New Password: '
-    ),
-    React.createElement('input', { id: 'newPass', type: 'password', name: 'newPass', placeholder: 'new password' }),
-    React.createElement(
-      'label',
       { htmlFor: 'pass2' },
-      'Retype Password: '
+      'Password: '
     ),
-    React.createElement('input', { id: 'newPass2', type: 'password', name: 'newPass2', placeholder: 'retype password' }),
+    React.createElement('input', { id: 'pass2', type: 'password', name: 'pass2', placeholder: 'retype password' }),
     React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
     React.createElement('input', { className: 'formSubmit waves-effect waves-purple btn', type: 'submit', value: 'Submit' })
   );
@@ -206,15 +201,17 @@ var ChangePassForm = function ChangePassForm(props) {
 var handleChangePass = function handleChangePass(e) {
   e.preventDefault();
 
-  if ($("#pass").val() == '' || $("#newPass").val() == '' || $("#newPass2").val() == '') {
+  if ($("#pass").val() == '' || $("#pass2").val() == '') {
     handleError("All fields are required");
     return false;
   }
 
-  if ($("#newPass").val() !== $("#newPass2").val()) {
-    handleError("Passwords must match");
+  if ($("#pass").val() !== $("#pass2").val()) {
+    handleError("All fields are required");
     return false;
   }
+
+  console.dir($("#changePassForm").serialize());
 
   sendAjax('POST', $("#changePassForm").attr("action"), $("#changePassForm").serialize(), redirect);
 
@@ -256,7 +253,7 @@ var YourFighterList = function YourFighterList(props) {
         { className: 'col s12 m12' },
         React.createElement(
           'div',
-          { className: 'card dark-purple lighten-1' },
+          { className: 'card blue-grey darken-1' },
           React.createElement(
             'div',
             { className: 'card-content white-text' },
@@ -342,7 +339,7 @@ var AllFighterList = function AllFighterList(props) {
         { className: 'col s3 m3' },
         React.createElement(
           'div',
-          { className: 'card dark-purple lighten-1' },
+          { className: 'card blue-grey darken-1' },
           React.createElement(
             'div',
             { className: 'card-content white-text' },
@@ -646,7 +643,7 @@ var sendAjax = function sendAjax(type, action, data, success) {
     success: success,
     error: function error(xhr, status, _error) {
       var messageObj = JSON.parse(xhr.responseText);
-      sendToast(messageObj.error || messageObj.err || messageObj.er);
+      handleError(messageObj.error);
     }
   });
 };

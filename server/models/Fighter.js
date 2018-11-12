@@ -76,7 +76,6 @@ FighterSchema.statics.findByAccount = (accountId, callback) => {
   const search = {
     account: convertId(accountId),
   };
-  console.dir(`non converted: ${accountId} converted:${convertId(accountId)}`);
 
   return FighterModel.find(search).select('account name health damage speed armor crit').exec(callback);
 };

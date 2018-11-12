@@ -96,20 +96,28 @@ const signup = (request, response) => {
 const changePass = (request, response) => {
   const req = request;
   const res = response;
-
-  req.body.pass = `${req.body.pass}`;
-  req.body.pass2 = `${req.body.pass2}`;
+  
+  req.body.pass = `${req.body.pass}`
+  req.body.newPass = `${req.body.newPass}`;
+  req.body.newPass2 = `${req.body.newPass2}`;
   // account: req.session.account._id
+  
+  // console.dir(`password: ${req.body.pass} new pass 1: ${req.body.newPass} new pass 2: ${req.body.newPass2}`);
 
-  if (!req.body.pass || !req.body.pass2) {
+  if (!req.body.pass || !req.body.newPass || !req.body.newPass2) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
-  if (req.body.pass !== req.body.pass2) {
+  if (req.body.newPass !== req.body.newPass2) {
     return res.status(400).json({ error: 'Passwords do not match!' });
   }
-
-  return Account.AccountModel.generateHash(req.body.pass, (salt, hash) =>
+  
+  return Account.AccountModel.authenticate(req.session.account.username, req.body.pass, (er, account) => {
+    if (er || !account) {
+      return res.status(401).json({ error: 'Incorrect password' });
+    }
+    
+    return Account.AccountModel.generateHash(req.body.pass, (salt, hash) =>
     // get the object in the database
      Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
        const account = doc;
@@ -123,17 +131,15 @@ const changePass = (request, response) => {
          console.dir(err);
          return res.status(400).json({ error: 'Account not found. Please try again' });
        }
-       console.dir(`old password = ${doc.password}`);
-      // update password
+       // update password
        account.password = hash;
        account.salt = salt;
-       console.dir(`new password = ${doc.password}`);
 
        const savePromise = doc.save();
 
        savePromise.then(() => {
          req.session.account = Account.AccountModel.toAPI(doc);
-         return res.json({ redirect: '/maker' });
+         return res.json({ message: 'Password Changed Successfully' });
        });
 
        savePromise.catch(error => {
@@ -143,6 +149,9 @@ const changePass = (request, response) => {
 
        return res.json({ });
      }));
+
+    return res.json({ message: 'Password Changed Successfully' });
+  });
 };
 
 module.exports.loginPage = loginPage;
