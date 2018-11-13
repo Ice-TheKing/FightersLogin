@@ -36,7 +36,7 @@ const handleDeleteClick = (e) => {
 };
 
 
-// sends a delete request to the server
+/// sends a delete request to the server
 const DeleteFighter = (e) => {
   let csrfToken = $("#_csrf").val();
   

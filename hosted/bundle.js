@@ -32,7 +32,7 @@ var handleDeleteClick = function handleDeleteClick(e) {
   DeleteFighter(e);
 };
 
-// sends a delete request to the server
+/// sends a delete request to the server
 var DeleteFighter = function DeleteFighter(e) {
   var csrfToken = $("#_csrf").val();
 
