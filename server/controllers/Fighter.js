@@ -1,6 +1,7 @@
 const models = require('../models');
 
 const Fighter = models.Fighter;
+const Account = models.Account; // need this to reference number of fighters already on the account
 
 const makerPage = (req, res) => {
   Fighter.FighterModel.findByAccount(req.session.account._id, (err, docs) => {
@@ -46,6 +47,22 @@ const deleteFighter = (request, response) => {
   const res = response;
 
   return Fighter.FighterModel.deleteByName(req.session.account._id, req.body.name, (err) => {
+    // add one more fighter to the account model
+    Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+      const account = doc;
+      account.numFighters -= 1;
+      
+      const accountPromise = doc.save();
+      
+      accountPromise.then(() => {
+        console.log(account.numFighters);
+      });
+      
+      accountPromise.catch(error => {
+        console.dir(error);
+      });
+    });
+    
     if (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occured' });
@@ -63,6 +80,7 @@ const makeFighter = (req, res) => {
   const speed = Number(req.body.speed);
   const armor = Number(req.body.armor);
   const crit = Number(req.body.crit);
+  // console.log(req.session.username);
   
   if (!name||!health||!damage||!speed||!armor||!crit) {
     return res.status(400).json({ error: 'All fighter stats required' });
@@ -71,33 +89,67 @@ const makeFighter = (req, res) => {
   if(health+damage+speed+armor+crit>36) {
     return res.status(400).json({ error: 'stats must not exceed 36' });
   }
-
-  const fighterData = {
-    name,
-    health,
-    damage,
-    speed,
-    armor,
-    crit,
-    account: req.session.account._id,
-  };
-
-  const newFighter = new Fighter.FighterModel(fighterData);
-
-  const fighterPromise = newFighter.save();
-
-  fighterPromise.then(() => res.json({ redirect: '/maker' }));
-
-  fighterPromise.catch((err) => {
-    console.log(err);
-    if (err.code === 11000) {
-      return res.status(400).json({ error: 'Fighter already exists.' });
+  
+  // check how many fighters the account has
+  Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+    if(err) {
+      console.log(err);
+      return res.status(500).json({ error: 'An error occurred' });
     }
+    
+    const account = doc;
+    
+    // console.log(`num fighters: ${account.numFighters} max fighters: ${account.maxFighters}`);
+    // console.dir(account);
+    
+    if(account.numFighters >= account.maxFighters) {
+      return res.status(400).json({ error: 'You hit your fighter limit. Delete one of your existing fighters to create a new one' });
+    }
+    
+    const fighterData = {
+      name,
+      health,
+      damage,
+      speed,
+      armor,
+      crit,
+      username: req.session.username,
+      account: req.session.account._id,
+    };
+    
+    const newFighter = new Fighter.FighterModel(fighterData);
+    
+    const fighterPromise = newFighter.save();
+    
+    fighterPromise.then(() => {
+      // increase number of fighters on the account
+      // console.dir(account.username);
+      
+      account.numFighters += 1;
+      const accountPromise = doc.save();
+      
+      accountPromise.then(() => {
+        console.log(account.numFighters);
+      });
+      
+      accountPromise.catch(error => {
+        console.dir(error);
+      });
+      
+      res.json({ redirect: '/maker' });
+    });
 
-    return res.status(400).json({ error: 'An error occurred' });
+    fighterPromise.catch((err) => {
+      // console.log(err);
+      if (err.code === 11000) {
+        return res.status(400).json({ error: 'Fighter already exists.' });
+      }
+      
+      return res.status(400).json({ error: 'An error occurred' });
+    });
+
+    return fighterPromise;
   });
-
-  return fighterPromise;
 };
 
 module.exports.makerPage = makerPage;

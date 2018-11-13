@@ -24,6 +24,18 @@ const AccountSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  numFighters: {
+    type: Number,
+    min: 0,
+    default: 0,
+    required: true,
+  },
+  maxFighters: {
+    type: Number,
+    min: 0,
+    default: 3,
+    required: true,
+  },
   createdDate: {
     type: Date,
     default: Date.now,

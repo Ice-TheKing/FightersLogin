@@ -8,7 +8,10 @@ const sendToast = (message) => {
 }
 
 const redirect = (response) => {
-  window.location = response.redirect;
+  if(response.redirect) {
+    window.location = response.redirect;
+  }
+  
   if(response.message) {
     sendToast(response.message);
   }

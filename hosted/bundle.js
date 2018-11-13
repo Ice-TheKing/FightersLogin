@@ -221,6 +221,29 @@ var handleChangePass = function handleChangePass(e) {
   return false;
 };
 
+var AccountForm = function AccountForm(props) {
+  return React.createElement(
+    'form',
+    { id: 'accountForm', name: 'accountForm',
+      onSubmit: increaseMaxFighters,
+      action: '/increaseMaxFighters',
+      method: 'POST'
+    },
+    React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf }),
+    React.createElement('input', { className: 'formSubmit waves-effect waves-purple btn', type: 'submit', value: 'Purcahse 1 Additional Fighter Slot' })
+  );
+};
+
+var increaseMaxFighters = function increaseMaxFighters(e) {
+  e.preventDefault();
+
+  var csrf = $("#_csrf").val();
+
+  sendAjax('POST', $("#accountForm").attr("action"), 'numFighters=1&_csrf=' + csrf, redirect);
+
+  return false;
+};
+
 /// Renders all fighters owned by player
 var YourFighterList = function YourFighterList(props) {
   if (props.fighters.length === 0) {
@@ -355,7 +378,7 @@ var AllFighterList = function AllFighterList(props) {
               'p',
               { id: 'accountField' },
               'Created By ',
-              fighter.account
+              fighter.username
             ),
             React.createElement(
               'p',
@@ -461,12 +484,19 @@ var setupFightersPage = function setupFightersPage(csrf) {
   updateUrl('/fighters');
 };
 
+var setupAccountPage = function setupAccountPage(csrf) {
+  ReactDOM.render(React.createElement(AccountForm, { csrf: csrf }), document.querySelector("#content"));
+
+  updateUrl('/account');
+};
+
 /// sets up click events for the navigation buttons to re-render the page with react
 var setupNavButtons = function setupNavButtons(csrf) {
   var makerButton = document.querySelector("#makerButton");
   var changePassButton = document.querySelector("#changePassButton");
   var yourFightersButton = document.querySelector("#yourFightersButton");
   var fightersButton = document.querySelector("#fightersButton");
+  var accountButton = document.querySelector("#accountButton");
 
   makerButton.addEventListener("click", function (e) {
     e.preventDefault();
@@ -491,6 +521,12 @@ var setupNavButtons = function setupNavButtons(csrf) {
     setupFightersPage(csrf);
     return false;
   });
+
+  accountButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    setupAccountPage(csrf);
+    return false;
+  });
 };
 
 /// request a csrfToken
@@ -501,9 +537,16 @@ var getToken = function getToken() {
   });
 };
 
+var getUsername = function getUsername() {
+  sendAjax('GET', '/getUsername', null, function (result) {
+    return result.username;
+  });
+};
+
 /// as soon as the document loads
 $(document).ready(function () {
   getToken();
+  getUsername();
 });
 
 /* Sliders for Create Page */
@@ -633,7 +676,10 @@ var sendToast = function sendToast(message) {
 };
 
 var redirect = function redirect(response) {
-  window.location = response.redirect;
+  if (response.redirect) {
+    window.location = response.redirect;
+  }
+
   if (response.message) {
     sendToast(response.message);
   }

@@ -141,7 +141,10 @@ var sendToast = function sendToast(message) {
 };
 
 var redirect = function redirect(response) {
-  window.location = response.redirect;
+  if (response.redirect) {
+    window.location = response.redirect;
+  }
+
   if (response.message) {
     sendToast(response.message);
   }

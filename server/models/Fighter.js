@@ -48,6 +48,12 @@ const FighterSchema = new mongoose.Schema({
     min: 0,
     required: true,
   },
+  
+  username: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 
   account: {
     type: mongoose.Schema.ObjectId,
@@ -70,6 +76,7 @@ FighterSchema.statics.toAPI = (doc) => ({
   speed: doc.speed,
   armor: doc.armor,
   crit: doc.crit,
+  username: doc.username,
 });
 
 FighterSchema.statics.findByAccount = (accountId, callback) => {
@@ -77,12 +84,12 @@ FighterSchema.statics.findByAccount = (accountId, callback) => {
     account: convertId(accountId),
   };
 
-  return FighterModel.find(search).select('account name health damage speed armor crit').exec(callback);
+  return FighterModel.find(search).select('account username name health damage speed armor crit').exec(callback);
 };
 
 FighterSchema.statics.findAll = (callback) => {
   const search = { };
-  return FighterModel.find(search).select('account name health damage speed armor crit').limit(100).exec(callback);
+  return FighterModel.find(search).select('account username name health damage speed armor crit').limit(400).exec(callback);
 };
 
 FighterSchema.statics.deleteByName = (accountId, name, callback) => {

@@ -169,6 +169,29 @@ const handleChangePass = (e) => {
   return false;
 };
 
+const AccountForm = (props) => {
+  return (
+    <form id="accountForm" name="accountForm"
+          onSubmit={increaseMaxFighters}
+          action="/increaseMaxFighters"
+          method="POST"
+      >
+      <input type="hidden" id="_csrf" name="_csrf" value={props.csrf} />
+      <input className="formSubmit waves-effect waves-purple btn" type="submit" value="Purcahse 1 Additional Fighter Slot" />
+    </form>
+  );
+};
+
+const increaseMaxFighters = (e) => {
+  e.preventDefault();
+  
+  let csrf = $("#_csrf").val();
+  
+  sendAjax('POST', $("#accountForm").attr("action"), `numFighters=1&_csrf=${csrf}`, redirect);
+  
+  return false;
+};
+
 /// Renders all fighters owned by player
 const YourFighterList = function(props) {
   if(props.fighters.length === 0) {
@@ -238,7 +261,7 @@ const AllFighterList = function(props) {
           <div className="card dark-purple lighten-1">
             <div className="card-content white-text">
               <span className="card-title">{fighter.name}</span>
-              <p id="accountField">Created By {fighter.account}</p>
+              <p id="accountField">Created By {fighter.username}</p>
               <p>Health: {fighter.health}</p>
               <p>Damage: {fighter.damage}</p>
               <p>Speed: {fighter.speed}</p>
@@ -334,12 +357,21 @@ const setupFightersPage = function(csrf) {
   updateUrl('/fighters');
 };
 
+const setupAccountPage = function(csrf) {
+  ReactDOM.render(
+    <AccountForm csrf={csrf} />, document.querySelector("#content")
+  );
+  
+  updateUrl('/account');
+}
+
 /// sets up click events for the navigation buttons to re-render the page with react
 const setupNavButtons = function(csrf) {
   const makerButton = document.querySelector("#makerButton");
   const changePassButton = document.querySelector("#changePassButton");
   const yourFightersButton = document.querySelector("#yourFightersButton");
   const fightersButton = document.querySelector("#fightersButton");
+  const accountButton = document.querySelector("#accountButton");
   
   makerButton.addEventListener("click", (e) => {
     e.preventDefault();
@@ -364,6 +396,12 @@ const setupNavButtons = function(csrf) {
     setupFightersPage(csrf);
     return false;
   });
+  
+  accountButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    setupAccountPage(csrf);
+    return false;
+  });
 };
 
 /// request a csrfToken
@@ -374,9 +412,16 @@ const getToken = () => {
   });
 };
 
+const getUsername = () => {
+  sendAjax('GET', '/getUsername', null, (result) => {
+    return result.username;
+  });
+};
+
 /// as soon as the document loads
 $(document).ready(function() {
   getToken();
+  getUsername();
 });
 
 /* Sliders for Create Page */

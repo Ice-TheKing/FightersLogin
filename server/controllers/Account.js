@@ -21,6 +21,17 @@ const getToken = (request, response) => {
   res.json(csrfJSON);
 };
 
+const getUsername = (request, response) => {
+  const req = request;
+  const res = response;
+  
+  const username = {
+    username: req.session.username,
+  };
+  
+  res.json(username);
+};
+
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');
@@ -43,6 +54,7 @@ const login = (request, response) => {
     }
 
     req.session.account = Account.AccountModel.toAPI(account);
+    req.session.username = username;
 
     return res.json({ redirect: '/maker' });
   });
@@ -70,6 +82,8 @@ const signup = (request, response) => {
       username: req.body.username,
       salt,
       password: hash,
+      numFighters: 0,
+      maxFighters: 3,
     };
 
     const newAccount = new Account.AccountModel(accountData);
@@ -78,7 +92,11 @@ const signup = (request, response) => {
 
     savePromise.then(() => {
       req.session.account = Account.AccountModel.toAPI(newAccount);
-      return res.json({ redirect: '/maker' });
+      req.session.username = req.body.username;
+      
+      console.log(newAccount);
+      
+      return res.json({ redirect: '/maker', message: 'Account Created Successfully' });
     });
 
     savePromise.catch((err) => {
@@ -154,10 +172,37 @@ const changePass = (request, response) => {
   });
 };
 
+const increaseMaxFighters = (request, response) => {
+  const req = request;
+  const res = response;
+  
+  const increase = req.body.numFighters;
+  // validate funds
+  
+  Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+    const account = doc;
+    account.maxFighters += 1;
+    
+    const accountPromise = doc.save();
+      
+    accountPromise.then(() => {
+      console.log(account.maxFighters);
+      return res.json({ message: `Purchase Successful` });
+    });
+    
+    accountPromise.catch(error => {
+      console.dir(error);
+      return res.status(400).json({ error: 'A problem occurred' });
+    });
+  });
+};
+
 module.exports.loginPage = loginPage;
 module.exports.login = login;
 module.exports.logout = logout;
 module.exports.signup = signup;
 module.exports.getToken = getToken;
+module.exports.getUsername = getUsername;
 module.exports.changePass = changePass;
+module.exports.increaseMaxFighters = increaseMaxFighters;
 // module.exports.changePassPage = changePassPage;
