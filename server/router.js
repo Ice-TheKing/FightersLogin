@@ -5,7 +5,7 @@ const router = (app) => {
   app.get('/getToken', mid.requiresSecure, controllers.Account.getToken);
   app.get('/getUsername', mid.requiresSecure, mid.requiresLogin, controllers.Account.getUsername);
   app.get('/getFighters', mid.requiresLogin, controllers.Fighter.getFighters);
-  // be cool to make this so you dont need to be logged in so you can peep before you play
+  // be cool to make this so you dont need to be logged in so you can peep the fighters before you play
   app.get('/getAllFighters', mid.requiresLogin, controllers.Fighter.getAllFighters);
   app.get('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
   app.post('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.login);

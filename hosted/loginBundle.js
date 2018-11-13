@@ -140,6 +140,7 @@ var sendToast = function sendToast(message) {
   M.toast({ html: '' + message });
 };
 
+/// either redirects, sends a toast, or both
 var redirect = function redirect(response) {
   if (response.redirect) {
     window.location = response.redirect;

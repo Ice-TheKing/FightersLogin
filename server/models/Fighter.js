@@ -67,6 +67,8 @@ const FighterSchema = new mongoose.Schema({
   },
 });
 
+// makes each fighter name unique to each account
+// i.e. (can have 2 'Jayceon' fighters if they are from different accounts, but not the same one)
 FighterSchema.index({ name: 1, account: 1 }, { unique: true });
 
 FighterSchema.statics.toAPI = (doc) => ({

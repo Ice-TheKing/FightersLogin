@@ -172,6 +172,7 @@ const changePass = (request, response) => {
   });
 };
 
+/// increases the number of fighters an account can have
 const increaseMaxFighters = (request, response) => {
   const req = request;
   const res = response;

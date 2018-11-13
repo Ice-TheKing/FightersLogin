@@ -102,8 +102,9 @@ const makeFighter = (req, res) => {
     // console.log(`num fighters: ${account.numFighters} max fighters: ${account.maxFighters}`);
     // console.dir(account);
     
+    // if the user is at max fighters, don't let them make another one
     if(account.numFighters >= account.maxFighters) {
-      return res.status(400).json({ error: 'You hit your fighter limit. Delete one of your existing fighters to create a new one' });
+      return res.status(400).json({ error: 'You hit your fighter limit. Delete one of your existing fighters to create a new one, or purchase an additional slot from the account page' });
     }
     
     const fighterData = {
