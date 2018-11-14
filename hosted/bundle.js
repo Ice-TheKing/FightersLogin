@@ -666,7 +666,7 @@ var setupBuyDiamondsPage = function setupBuyDiamondsPage(csrf) {
 /// sets up click events for the navigation buttons to re-render the page with react
 var setupNavButtons = function setupNavButtons(csrf) {
   var makerButton = document.querySelector("#makerButton");
-  var changePassButton = document.querySelector("#changePassButton");
+  // const changePassButton = document.querySelector("#changePassButton");
   var yourFightersButton = document.querySelector("#yourFightersButton");
   var fightersButton = document.querySelector("#fightersButton");
   var accountButton = document.querySelector("#accountButton");
@@ -677,11 +677,11 @@ var setupNavButtons = function setupNavButtons(csrf) {
     return false;
   });
 
-  changePassButton.addEventListener("click", function (e) {
-    e.preventDefault();
-    setupChangePassPage(csrf);
-    return false;
-  });
+  // changePassButton.addEventListener("click", (e) => {
+  //   e.preventDefault();
+  //   setupChangePassPage(csrf);
+  //   return false;
+  // });
 
   yourFightersButton.addEventListener("click", function (e) {
     e.preventDefault();
