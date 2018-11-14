@@ -23,24 +23,26 @@ $silver-tan: (
 /* Scheme 2 */
 
 $soft-green: (
-  "base": #B5C2B7
+  "base":       #B5C2B7
 );
 
 $soft-blue: (
-  "base": #8C93A8
+  "base":       #8C93A8
 );
 
 $soft-violet: (
-  "base": #62466B
+  "base":       #62466B,
+  "lighten-1":  #7E6785,
+  "darken-1":   #513A58,
 );
 
 $rich-purple: (
-  "base": #45364B
+  "base":       #45364B
 );
 
 $dark-purple: (
-  "base": #2D2327,
-  "lighten-1": #40373A
+  "base":       #2D2327,
+  "lighten-1":  #40373A
 );
 
 $materialize-red: (

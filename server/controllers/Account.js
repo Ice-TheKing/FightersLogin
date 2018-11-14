@@ -84,6 +84,8 @@ const signup = (request, response) => {
       password: hash,
       numFighters: 0,
       maxFighters: 3,
+      diamonds: 0,
+      gold: 0,
     };
 
     const newAccount = new Account.AccountModel(accountData);
@@ -177,24 +179,87 @@ const increaseMaxFighters = (request, response) => {
   const req = request;
   const res = response;
   
-  const increase = req.body.numFighters;
-  // validate funds
-  
   Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+    if(err) {
+      console.log(err);
+      return res.status(500).json({ error: 'A problem occurred' });
+    }
+    
     const account = doc;
+    const increase = Number(req.body.numFighters);
+  
+    // validate funds
+    const cost = increase * 80; // each fighter costs 80 diamonds
+    const diamonds = Number(account.diamonds);
+    
+    if(diamonds < cost) {
+      return res.status(400).json({ error: 'Not enough diamonds' });
+    }
+    
     account.maxFighters += 1;
+    account.diamonds -= cost;
     
     const accountPromise = doc.save();
       
     accountPromise.then(() => {
-      console.log(account.maxFighters);
-      return res.json({ message: `Purchase Successful` });
+      return res.json({ message: 'Transaction Complete', redirect: '/maker' });
     });
     
     accountPromise.catch(error => {
       console.dir(error);
-      return res.status(400).json({ error: 'A problem occurred' });
+      return res.status(500).json({ error: 'A problem occurred' });
     });
+  });
+};
+
+const addDiamonds = (request, response) => {
+  const req = request;
+  const res = response;
+  
+  Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+    const account = doc;
+    const amount = Number(req.body.diamonds);
+    console.log(`amount: ${amount}`);
+    
+    account.diamonds += amount;
+    
+    const accountPromise = doc.save();
+    
+    accountPromise.then(() => {
+      return res.json({ message: `Purchase Successful`, redirect: `/maker` });
+    });
+    
+    accountPromise.catch(error => {
+      console.dir(error);
+      return res.status(500).json({ error: 'A problem occurred' });
+    });
+  });
+};
+
+const getMaxFighters = (request, response) => {
+  const req = request;
+  const res = response;
+  
+  Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+    if(err) {
+      return res.json({ maxFighters:'err' });
+    }
+    
+    return res.json({ maxFighters: doc.maxFighters });
+  });
+};
+
+const getDiamonds = (request, response) => {
+  console.log('getting diamonds');
+  const req = request;
+  const res = response;
+  
+  Account.AccountModel.findByUsername(req.session.account.username, (err, doc) => {
+    if(err) {
+      return res.json({ diamonds:'err' });
+    }
+    
+    return res.json({ diamonds: doc.diamonds });
   });
 };
 
@@ -205,5 +270,7 @@ module.exports.signup = signup;
 module.exports.getToken = getToken;
 module.exports.getUsername = getUsername;
 module.exports.changePass = changePass;
+module.exports.getMaxFighters = getMaxFighters;
 module.exports.increaseMaxFighters = increaseMaxFighters;
-// module.exports.changePassPage = changePassPage;
+module.exports.getDiamonds = getDiamonds;
+module.exports.addDiamonds = addDiamonds;

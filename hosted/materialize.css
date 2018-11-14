@@ -54,6 +54,18 @@
 .soft-violet-text {
   color: #62466B !important; }
 
+.soft-violet.lighten-1 {
+  background-color: #7E6785 !important; }
+
+.soft-violet-text.text-lighten-1 {
+  color: #7E6785 !important; }
+
+.soft-violet.darken-1 {
+  background-color: #513A58 !important; }
+
+.soft-violet-text.text-darken-1 {
+  color: #513A58 !important; }
+
 .rich-purple {
   background-color: #45364B !important; }
 

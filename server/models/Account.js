@@ -34,6 +34,16 @@ const AccountSchema = new mongoose.Schema({
     min: 0,
     required: true,
   },
+  diamonds: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
+  gold: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
   createdDate: {
     type: Date,
     default: Date.now,

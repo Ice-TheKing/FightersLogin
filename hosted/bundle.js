@@ -229,9 +229,127 @@ var AccountForm = function AccountForm(props) {
       action: '/increaseMaxFighters',
       method: 'POST'
     },
-    React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf }),
-    React.createElement('input', { className: 'formSubmit waves-effect waves-purple btn', type: 'submit', value: 'Purcahse 1 Additional Fighter Slot' })
+    React.createElement(
+      'div',
+      { className: 'container' },
+      React.createElement(
+        'h5',
+        null,
+        'Max Fighters: ',
+        props.maxFighters
+      ),
+      React.createElement(
+        'p',
+        null,
+        React.createElement('input', { className: 'formSubmit waves-effect waves-purple btn', type: 'submit', value: 'Purchase 1 Additional Fighter Slot (80 diamonds)' })
+      )
+    ),
+    React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf })
   );
+};
+
+var BuyDiamondsPage = function BuyDiamondsPage(props) {
+  return React.createElement(
+    'form',
+    { id: 'buyDiamondsForm', name: 'buyDiamondsForm' },
+    React.createElement(
+      'div',
+      { className: 'container' },
+      React.createElement(
+        'div',
+        { className: 'row' },
+        React.createElement(
+          'div',
+          { className: 'col s4 m4' },
+          React.createElement(
+            'div',
+            { className: 'card' },
+            React.createElement(
+              'div',
+              { className: 'card-image' },
+              React.createElement('img', { src: '/assets/img/diamondsBkd.png' }),
+              React.createElement(
+                'a',
+                { className: 'btn-floating btn-large halfway-fab waves-effect waves-light soft-blue', id: '100', onClick: handleBuyDiamonds },
+                '$0.99'
+              )
+            ),
+            React.createElement(
+              'div',
+              { className: 'card-title card-content' },
+              React.createElement(
+                'p',
+                null,
+                '100 Diamonds'
+              )
+            )
+          )
+        ),
+        React.createElement(
+          'div',
+          { className: 'col s4 m4' },
+          React.createElement(
+            'div',
+            { className: 'card' },
+            React.createElement(
+              'div',
+              { className: 'card-image' },
+              React.createElement('img', { src: '/assets/img/diamondsBkd.png' }),
+              React.createElement(
+                'a',
+                { className: 'btn-floating btn-large halfway-fab waves-effect waves-light soft-blue', id: '400', onClick: handleBuyDiamonds },
+                '$3.49'
+              )
+            ),
+            React.createElement(
+              'div',
+              { className: 'card-title card-content' },
+              React.createElement(
+                'p',
+                null,
+                '400 Diamonds'
+              )
+            )
+          )
+        ),
+        React.createElement(
+          'div',
+          { className: 'col s4 m4' },
+          React.createElement(
+            'div',
+            { className: 'card' },
+            React.createElement(
+              'div',
+              { className: 'card-image' },
+              React.createElement('img', { src: '/assets/img/diamondsBkd.png' }),
+              React.createElement(
+                'a',
+                { className: 'btn-floating btn-large halfway-fab waves-effect waves-light soft-blue', id: '2000', onClick: handleBuyDiamonds },
+                '$14.99'
+              )
+            ),
+            React.createElement(
+              'div',
+              { className: 'card-title card-content' },
+              React.createElement(
+                'p',
+                null,
+                '2000 Diamonds'
+              )
+            )
+          )
+        )
+      )
+    ),
+    React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf })
+  );
+};
+
+var handleBuyDiamonds = function handleBuyDiamonds(e) {
+  var amount = Number(e.target.id);
+  var csrf = $("#_csrf").val();
+
+  sendAjax('POST', '/addDiamonds', 'diamonds=' + amount + '&_csrf=' + csrf, redirect);
 };
 
 var increaseMaxFighters = function increaseMaxFighters(e) {
@@ -485,9 +603,25 @@ var setupFightersPage = function setupFightersPage(csrf) {
 };
 
 var setupAccountPage = function setupAccountPage(csrf) {
-  ReactDOM.render(React.createElement(AccountForm, { csrf: csrf }), document.querySelector("#content"));
+  ReactDOM.render(React.createElement(LoadingPage, { csrf: csrf }), document.querySelector("#content"));
+
+  // get current number of fighters
+  sendAjax('GET', '/getMaxFighters', null, function (result) {
+    ReactDOM.render(React.createElement(AccountForm, { csrf: csrf, maxFighters: result.maxFighters }), document.querySelector("#content"));
+
+    // initialize materialize elements
+    $('.collapsible').collapsible();
+  });
 
   updateUrl('/account');
+};
+
+var setupBuyDiamondsPage = function setupBuyDiamondsPage(csrf) {
+  csrf = $("#_csrf").val();
+
+  ReactDOM.render(React.createElement(BuyDiamondsPage, { csrf: csrf }), document.querySelector("#content"));
+
+  updateUrl('/buyDiamonds');
 };
 
 /// sets up click events for the navigation buttons to re-render the page with react
@@ -534,12 +668,60 @@ var getToken = function getToken() {
   sendAjax('GET', '/getToken', null, function (result) {
     setupNavButtons(result.csrfToken);
     setupFightersPage(result.csrfToken);
+    setupIcons();
   });
 };
 
 var getUsername = function getUsername() {
   sendAjax('GET', '/getUsername', null, function (result) {
     return result.username;
+  });
+};
+
+var getMaxFighters = function getMaxFighters(callback) {
+  sendAjax('GET', '/getMaxFighters', null, function (result) {
+    return callback;
+  });
+};
+
+var DiamondIcon = function DiamondIcon(props) {
+  return React.createElement(
+    'div',
+    { className: 'collection', id: 'diamondCollection' },
+    React.createElement(
+      'a',
+      { className: 'collection-item soft-violet', type: 'submit', onClick: setupBuyDiamondsPage },
+      React.createElement('img', { id: 'diamondImg', src: '/assets/img/diamondIcon.png' }),
+      React.createElement(
+        'p',
+        { id: 'diamondText' },
+        props.diamonds
+      ),
+      React.createElement(
+        'i',
+        { className: 'material-icons', id: 'addDiamondsBtn' },
+        'add'
+      )
+    )
+  );
+};
+
+var setupIcons = function setupIcons() {
+  // get number of diamonds
+  sendAjax('GET', '/getDiamonds', null, function (result) {
+    var diamonds = result.diamonds;
+
+    // get the navbar
+    var rightNav = document.querySelector("#right-nav");
+    var leftNav = document.querySelector("#left-nav");
+
+    // Div to render the diamond icon to
+    var diamondDiv = document.createElement('div');
+    diamondDiv.setAttribute('id', 'diamondIcon');
+    rightNav.insertBefore(diamondDiv, rightNav.firstChild);
+
+    // render the icon in the div we just made
+    ReactDOM.render(React.createElement(DiamondIcon, { diamonds: result.diamonds }), document.querySelector("#diamondIcon"));
   });
 };
 

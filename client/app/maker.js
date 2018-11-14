@@ -176,10 +176,73 @@ const AccountForm = (props) => {
           action="/increaseMaxFighters"
           method="POST"
       >
+      
+      <div className="container">
+        {/* Number of Fighters */}
+        <h5>
+          Max Fighters: {props.maxFighters}
+        </h5>
+        <p>
+          {/* Button for purchasing additional fighters */}
+          <input className="formSubmit waves-effect waves-purple btn" type="submit" value="Purchase 1 Additional Fighter Slot (80 diamonds)" />
+        </p>
+      </div>
       <input type="hidden" id="_csrf" name="_csrf" value={props.csrf} />
-      <input className="formSubmit waves-effect waves-purple btn" type="submit" value="Purcahse 1 Additional Fighter Slot" />
     </form>
   );
+};
+
+const BuyDiamondsPage = (props) => {
+  return (
+    <form id="buyDiamondsForm" name="buyDiamondsForm">
+      <div className="container">
+        <div className="row">
+          <div className="col s4 m4">
+            
+            <div className="card">
+              <div className="card-image">
+                <img src="/assets/img/diamondsBkd.png"></img>
+                <a className="btn-floating btn-large halfway-fab waves-effect waves-light soft-blue" id="100" onClick={handleBuyDiamonds}>$0.99</a>
+              </div>
+              <div className="card-title card-content">
+                <p>100 Diamonds</p>
+              </div>
+            </div>
+          </div>
+          <div className="col s4 m4">
+            <div className="card">
+              <div className="card-image">
+                <img src="/assets/img/diamondsBkd.png"></img>
+                <a className="btn-floating btn-large halfway-fab waves-effect waves-light soft-blue" id="400" onClick={handleBuyDiamonds}>$3.49</a>
+              </div>
+              <div className="card-title card-content">
+                <p>400 Diamonds</p>
+              </div>
+            </div>
+          </div>
+          <div className="col s4 m4">
+            <div className="card">
+              <div className="card-image">
+                <img src="/assets/img/diamondsBkd.png"></img>
+                <a className="btn-floating btn-large halfway-fab waves-effect waves-light soft-blue" id="2000" onClick={handleBuyDiamonds}>$14.99</a>
+              </div>
+              <div className="card-title card-content">
+                <p>2000 Diamonds</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <input type="hidden" id="_csrf" name="_csrf" value={props.csrf} />
+    </form>
+  );
+};
+
+const handleBuyDiamonds = (e) => {
+  const amount = Number(e.target.id);
+  const csrf = $("#_csrf").val();
+  
+  sendAjax('POST', '/addDiamonds', `diamonds=${amount}&_csrf=${csrf}`, redirect);
 };
 
 const increaseMaxFighters = (e) => {
@@ -359,10 +422,30 @@ const setupFightersPage = function(csrf) {
 
 const setupAccountPage = function(csrf) {
   ReactDOM.render(
-    <AccountForm csrf={csrf} />, document.querySelector("#content")
+    <LoadingPage csrf={csrf} />, document.querySelector("#content")
   );
   
+  // get current number of fighters
+  sendAjax('GET', '/getMaxFighters', null, (result) => {
+    ReactDOM.render(
+      <AccountForm csrf={csrf} maxFighters={result.maxFighters} />, document.querySelector("#content")
+    );
+    
+    // initialize materialize elements
+    $('.collapsible').collapsible();
+  });
+  
   updateUrl('/account');
+};
+
+const setupBuyDiamondsPage = function(csrf) {
+  csrf = $("#_csrf").val();
+  
+  ReactDOM.render(
+    <BuyDiamondsPage csrf={csrf} />, document.querySelector("#content")
+  );
+  
+  updateUrl('/buyDiamonds');
 }
 
 /// sets up click events for the navigation buttons to re-render the page with react
@@ -399,7 +482,7 @@ const setupNavButtons = function(csrf) {
   
   accountButton.addEventListener("click", (e) => {
     e.preventDefault();
-    setupAccountPage(csrf);
+    setupAccountPage(csrf);    
     return false;
   });
 };
@@ -409,12 +492,46 @@ const getToken = () => {
   sendAjax('GET', '/getToken', null, (result) => {
     setupNavButtons(result.csrfToken);
     setupFightersPage(result.csrfToken);
+    setupIcons();
   });
 };
 
 const getUsername = () => {
   sendAjax('GET', '/getUsername', null, (result) => {
     return result.username;
+  });
+};
+
+const getMaxFighters = (callback) => {
+  sendAjax('GET', '/getMaxFighters', null, (result) => callback);
+};
+
+const DiamondIcon = function(props) {
+  return (
+    <div className="collection" id="diamondCollection">
+      <a className="collection-item soft-violet" type="submit" onClick={setupBuyDiamondsPage}><img id="diamondImg" src="/assets/img/diamondIcon.png"></img><p id="diamondText">{props.diamonds}</p><i className="material-icons" id="addDiamondsBtn">add</i></a>
+    </div>
+  );
+};
+
+const setupIcons = () => {
+  // get number of diamonds
+  sendAjax('GET', '/getDiamonds', null, (result) => {
+    const diamonds = result.diamonds;
+    
+    // get the navbar
+    const rightNav = document.querySelector("#right-nav");
+    const leftNav = document.querySelector("#left-nav");
+    
+    // Div to render the diamond icon to
+    let diamondDiv = document.createElement('div');
+    diamondDiv.setAttribute('id', 'diamondIcon');
+    rightNav.insertBefore(diamondDiv, rightNav.firstChild);
+    
+    // render the icon in the div we just made
+    ReactDOM.render(
+      <DiamondIcon diamonds={result.diamonds} />, document.querySelector("#diamondIcon")
+    );
   });
 };
 
