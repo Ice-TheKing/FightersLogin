@@ -40,7 +40,6 @@ const handleDeleteClick = (e) => {
 const DeleteFighter = (e) => {
   let csrfToken = $("#_csrf").val();
   
-  // console.dir(e.target.name);
   let currentFighter = {
     name: e.target.name,
     _csrf: csrfToken,
@@ -171,24 +170,43 @@ const handleChangePass = (e) => {
 
 const AccountForm = (props) => {
   return (
-    <form id="accountForm" name="accountForm"
-          onSubmit={increaseMaxFighters}
-          action="/increaseMaxFighters"
-          method="POST"
-      >
-      
-      <div className="container">
-        {/* Number of Fighters */}
-        <h5>
-          Max Fighters: {props.maxFighters}
-        </h5>
-        <p>
-          {/* Button for purchasing additional fighters */}
-          <input className="formSubmit waves-effect waves-purple btn" type="submit" value="Purchase 1 Additional Fighter Slot (80 diamonds)" />
-        </p>
-      </div>
-      <input type="hidden" id="_csrf" name="_csrf" value={props.csrf} />
-    </form>
+    <div className="container">
+      <form id="accountForm" name="accountForm"
+            onSubmit={increaseMaxFighters}
+            action="/increaseMaxFighters"
+            method="POST"
+        >
+        
+        <div>
+          {/* Number of Fighters */}
+          <h5>
+            Max Fighters: {props.maxFighters}
+          </h5>
+          <p>
+            {/* Button for purchasing additional fighters */}
+            <input className="formSubmit waves-effect waves-purple btn" type="submit" value="Purchase 1 Additional Fighter Slot (80 diamonds)" />
+          </p>
+        </div>
+        <input type="hidden" id="_csrf" name="_csrf" value={props.csrf} />
+      </form>
+      <form id="changePassForm" name="changePassForm"
+            onSubmit={handleChangePass}
+            action="/changePass"
+            method="POST"
+        >
+        <br></br><br></br>
+        <h5>Change Password:</h5>
+        <br></br>
+        <label htmlFor="newPass">Current Password: </label>
+        <input id="pass" type="password" name="pass" placeholder="password" />
+        <label htmlFor="newPass">New Password: </label>
+        <input id="newPass" type="password" name="newPass" placeholder="new password" />
+        <label htmlFor="pass2">Retype Password: </label>
+        <input id="newPass2" type="password" name="newPass2" placeholder="retype password" />
+        <input type="hidden" name="_csrf" value={props.csrf} />
+        <input className="formSubmit waves-effect waves-purple btn" type="submit" value="Submit" />
+      </form>    
+    </div>
   );
 };
 

@@ -36,7 +36,6 @@ var handleDeleteClick = function handleDeleteClick(e) {
 var DeleteFighter = function DeleteFighter(e) {
   var csrfToken = $("#_csrf").val();
 
-  // console.dir(e.target.name);
   var currentFighter = {
     name: e.target.name,
     _csrf: csrfToken
@@ -223,28 +222,68 @@ var handleChangePass = function handleChangePass(e) {
 
 var AccountForm = function AccountForm(props) {
   return React.createElement(
-    'form',
-    { id: 'accountForm', name: 'accountForm',
-      onSubmit: increaseMaxFighters,
-      action: '/increaseMaxFighters',
-      method: 'POST'
-    },
+    'div',
+    { className: 'container' },
     React.createElement(
-      'div',
-      { className: 'container' },
+      'form',
+      { id: 'accountForm', name: 'accountForm',
+        onSubmit: increaseMaxFighters,
+        action: '/increaseMaxFighters',
+        method: 'POST'
+      },
+      React.createElement(
+        'div',
+        null,
+        React.createElement(
+          'h5',
+          null,
+          'Max Fighters: ',
+          props.maxFighters
+        ),
+        React.createElement(
+          'p',
+          null,
+          React.createElement('input', { className: 'formSubmit waves-effect waves-purple btn', type: 'submit', value: 'Purchase 1 Additional Fighter Slot (80 diamonds)' })
+        )
+      ),
+      React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf })
+    ),
+    React.createElement(
+      'form',
+      { id: 'changePassForm', name: 'changePassForm',
+        onSubmit: handleChangePass,
+        action: '/changePass',
+        method: 'POST'
+      },
+      React.createElement('br', null),
+      React.createElement('br', null),
       React.createElement(
         'h5',
         null,
-        'Max Fighters: ',
-        props.maxFighters
+        'Change Password:'
       ),
+      React.createElement('br', null),
       React.createElement(
-        'p',
-        null,
-        React.createElement('input', { className: 'formSubmit waves-effect waves-purple btn', type: 'submit', value: 'Purchase 1 Additional Fighter Slot (80 diamonds)' })
-      )
-    ),
-    React.createElement('input', { type: 'hidden', id: '_csrf', name: '_csrf', value: props.csrf })
+        'label',
+        { htmlFor: 'newPass' },
+        'Current Password: '
+      ),
+      React.createElement('input', { id: 'pass', type: 'password', name: 'pass', placeholder: 'password' }),
+      React.createElement(
+        'label',
+        { htmlFor: 'newPass' },
+        'New Password: '
+      ),
+      React.createElement('input', { id: 'newPass', type: 'password', name: 'newPass', placeholder: 'new password' }),
+      React.createElement(
+        'label',
+        { htmlFor: 'pass2' },
+        'Retype Password: '
+      ),
+      React.createElement('input', { id: 'newPass2', type: 'password', name: 'newPass2', placeholder: 'retype password' }),
+      React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+      React.createElement('input', { className: 'formSubmit waves-effect waves-purple btn', type: 'submit', value: 'Submit' })
+    )
   );
 };
 
