@@ -38,6 +38,7 @@ const urlEncodeObject = (object) => {
   return Object.keys(object).map(key => key + '=' + object[key]).join('&');
 };
 
-const updateUrl = (url) => {
-  
+const updateUrl = (url, state) => {
+  let stateObj = { state: url };
+  history.pushState(stateObj, '', url);
 };

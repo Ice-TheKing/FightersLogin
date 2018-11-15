@@ -173,4 +173,7 @@ var urlEncodeObject = function urlEncodeObject(object) {
   }).join('&');
 };
 
-var updateUrl = function updateUrl(url) {};
+var updateUrl = function updateUrl(url, state) {
+  var stateObj = { state: url };
+  history.pushState(stateObj, '', url);
+};

@@ -605,7 +605,7 @@ var setupMakerPage = function setupMakerPage(csrf) {
   // setup sliders
   setupMaterializeElements();
 
-  updateUrl('/maker');
+  updateUrl('/createFighter');
 };
 
 /// renders the change password page
@@ -660,7 +660,7 @@ var setupBuyDiamondsPage = function setupBuyDiamondsPage(csrf) {
 
   ReactDOM.render(React.createElement(BuyDiamondsPage, { csrf: csrf }), document.querySelector("#content"));
 
-  updateUrl('/buyDiamonds');
+  updateUrl('/buyDiamonds', setupBuyDiamondsPage);
 };
 
 /// sets up click events for the navigation buttons to re-render the page with react
@@ -929,4 +929,7 @@ var urlEncodeObject = function urlEncodeObject(object) {
   }).join('&');
 };
 
-var updateUrl = function updateUrl(url) {};
+var updateUrl = function updateUrl(url, state) {
+  var stateObj = { state: url };
+  history.pushState(stateObj, '', url);
+};

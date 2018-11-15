@@ -396,7 +396,7 @@ const setupMakerPage = function(csrf) {
   // setup sliders
   setupMaterializeElements();
   
-  updateUrl('/maker');
+  updateUrl('/createFighter');
 };
 
 /// renders the change password page
@@ -463,7 +463,7 @@ const setupBuyDiamondsPage = function(csrf) {
     <BuyDiamondsPage csrf={csrf} />, document.querySelector("#content")
   );
   
-  updateUrl('/buyDiamonds');
+  updateUrl('/buyDiamonds', setupBuyDiamondsPage);
 }
 
 /// sets up click events for the navigation buttons to re-render the page with react
